@@ -11,33 +11,69 @@
 fibonacci:
 	@ ADD/MODIFY CODE BELOW
 	@ PROLOG
-	push {r3, r4, r5, lr}
+	push {r3, r4, r5, r6, lr}
+	
+	
+	@ r3 = -1(previous) , r4 = 1(result) , r5 = sum , r6 = i, r0 = x
+	mov r3, #-1  
+	mov r4, #1
+ 	mov r5, #0
+	mov r6, #0
 
-	@ R4 = R0 - 0 (update flags)
-	@ if(R0 <= 0) goto .L3 (which returns 0)
+.loop:
+	@ sum = result + previous
+	add r5, r3, r4 
+	
+	@ previous = result
+	mov r3, r4
 
-	@ Compare R4 wtih 1
-	@ If R4 == 1 goto .L4 (which returns 1)
+	@ result = sum
+	mov r4 , r5
+	
+		
+	@ check whether i <= x, it means check whether x-i>= 0 
+	add r6, #1
+	cmp r0, r6
+	bge .loop
+	mov r0 ,r5
+	
+	/*@ use Thumb2 conditional code branch unpredictable error
+	add r6, #1
+	cmp r0, r6
+	ite ge 
+	bge .loop
+	movlt r0, r5
+	*/
+	
+	/*@ use Thumb2 conditional code 1
+	add r6, #1
+	cmp r0, r6
+	ite lt 
+	movlt r0, r5
+	bge .loop
+	*/
+		
+	/*@ use suffix code 2
+	subs r0, #1
+	bge .loop
+	mov r0, r5	
+	*/
 
-	@ R0 = R4 - 1
-	@ Recursive call to fibonacci with R4 - 1 as parameter
+	/*@ use suffix & Thumb2 code 3
+	subs r0, #1
+	ite lt
+	movlt r0, r5
+	bge .loop
+	*/
 
-	@ R5 = R0
-	@ R0 = R4 - 2
-	@ Recursive call to fibonacci with R4 - 2 as parameter
-
-	@ R0 = R5 + R0 (update flags)
-
-	pop {r3, r4, r5, pc}		@EPILOG
-
-	@ END CODE MODIFICATION
-.L3:
-	mov r0, #0			@ R0 = 0
-	pop {r3, r4, r5, pc}		@ EPILOG
-
-.L4:
-	mov r0, #1			@ R0 = 1
-	pop {r3, r4, r5, pc}		@ EPILOG
-
+	/*@ use suffix & Thumb2 code 4
+	subs r0, #1
+	it ge
+	bge .loop	
+	mov r0, r5
+	*/
+	pop {r3, r4, r5, r6, pc}		@EPILOG
+	
+	@ END CODE 
 	.size fibonacci, .-fibonacci
 	.end
