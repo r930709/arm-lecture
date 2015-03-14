@@ -32,46 +32,11 @@ fibonacci:
 	
 		
 	@ check whether i <= x, it means check whether x-i>= 0 
-	add r6, #1
-	cmp r0, r6
+	add r6, #1     @ r6 = r6 + 1(i++)
+	cmp r0, r6     @ r0 - r6 ? (x-i ?)
 	bge .loop
-	mov r0 ,r5
-	
-	/*@ use Thumb2 conditional code branch unpredictable error
-	add r6, #1
-	cmp r0, r6
-	ite ge 
-	bge .loop
-	movlt r0, r5
-	*/
-	
-	/*@ use Thumb2 conditional code 1
-	add r6, #1
-	cmp r0, r6
-	ite lt 
-	movlt r0, r5
-	bge .loop
-	*/
+	mov r0 ,r5     @ put sum to return result 
 		
-	/*@ use suffix code 2
-	subs r0, #1
-	bge .loop
-	mov r0, r5	
-	*/
-
-	/*@ use suffix & Thumb2 code 3
-	subs r0, #1
-	ite lt
-	movlt r0, r5
-	bge .loop
-	*/
-
-	/*@ use suffix & Thumb2 code 4
-	subs r0, #1
-	it ge
-	bge .loop	
-	mov r0, r5
-	*/
 	pop {r3, r4, r5, r6, pc}		@EPILOG
 	
 	@ END CODE 
